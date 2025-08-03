@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/generated/prisma";
 import React from "react";
 import {
   IconSearch,
@@ -8,9 +8,11 @@ import {
   IconEye,
 } from "@tabler/icons-react";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
 async function page() {
-  const prisma = new PrismaClient();
+  // const prisma = new PrismaClient();
+  // const data = await prisma.item.findMany();
   const data = await prisma.item.findMany();
 
   return (
@@ -144,7 +146,7 @@ async function page() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table>  
           </div>
 
           {/* Pagination */}

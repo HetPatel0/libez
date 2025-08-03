@@ -17,6 +17,7 @@ const eslintConfig = [
       "node_modules/**/*",
       ".next/**/*",
       "out/**/*",
+      "**/generated/**/*",
     ],
   },
   {
