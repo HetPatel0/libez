@@ -120,6 +120,7 @@ async function page() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item?.ItemAuthor}
+                      
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       Rs {item?.ItemPrice?.toString() || "0"}
