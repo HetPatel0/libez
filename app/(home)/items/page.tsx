@@ -93,7 +93,7 @@ async function page() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {data.map((item: any, idx: number) => (
+                {data.map((item, idx: number) => (
                   <tr
                     key={idx}
                     className="hover:bg-gray-50 transition-colors duration-200"
