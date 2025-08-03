@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import FlowBtn from "./FlowBtn";
 import Link from "next/link";
 import { LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
@@ -11,15 +11,39 @@ import {
   IconX,
   IconDashboard,
   IconLibrary,
+  IconLogout,
 } from "@tabler/icons-react";
 
 function Navbar() {
   const { user, isAuthenticated } = useKindeBrowserClient();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
@@ -61,7 +85,7 @@ function Navbar() {
           {/* User Menu / Auth */}
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
-              <div className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <div className="flex items-center space-x-3">
                   <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-600">
                     <span>Welcome,</span>
@@ -69,36 +93,34 @@ function Navbar() {
                       {user?.given_name}
                     </span>
                   </div>
-                  <div className="dropdown dropdown-end">
-                    <div
-                      tabIndex={0}
-                      role="button"
-                      className="btn btn-ghost btn-circle"
-                    >
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200">
-                        {user?.given_name?.charAt(0).toUpperCase() || "U"}
+                  <button
+                    onClick={toggleDropdown}
+                    className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    {user?.given_name?.charAt(0).toUpperCase() || "U"}
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-50">
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm text-gray-500 truncate">
+                          {user?.email}
+                        </p>
                       </div>
-                    </div>
-                    <ul
-                      tabIndex={0}
-                      className="dropdown-content menu bg-white rounded-xl shadow-lg border border-gray-200 z-[1] w-52 p-2 mt-2"
-                    >
-                      <li className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100">
-                        {user?.email}
-                      </li>
-                      <li>
-                        <LogoutLink className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-                          <IconUser className="w-4 h-4" />
+                      <div className="py-1">
+                        <LogoutLink className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200 w-full text-left">
+                          <IconLogout className="w-4 h-4" />
                           <span>Logout</span>
                         </LogoutLink>
-                      </li>
-                    </ul>
-                  </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
               <LoginLink>
-                <button className="btn btn-primary bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                   Sign In
                 </button>
               </LoginLink>
@@ -107,7 +129,7 @@ function Navbar() {
             {/* Mobile menu button */}
             <button
               onClick={toggleMobileMenu}
-              className="md:hidden btn btn-ghost btn-circle"
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               {isMobileMenuOpen ? (
                 <IconX className="w-6 h-6" />

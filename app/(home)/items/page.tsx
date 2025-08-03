@@ -6,8 +6,6 @@ import {
   IconPlus,
   IconBook,
   IconEye,
-  IconEdit,
-  IconTrash,
 } from "@tabler/icons-react";
 import Link from "next/link";
 
