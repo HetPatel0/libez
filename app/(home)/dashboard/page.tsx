@@ -11,7 +11,9 @@ async function Dashboard() {
   }
   return (
     <div>
+      {/* // ek user dashbord banvanu ane ee conditionall ma nakhvanu */}
       <Dash />
+      {/* // admin dashboard che */}
     </div>
   );
 }

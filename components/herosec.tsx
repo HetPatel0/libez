@@ -1,225 +1,157 @@
 "use client";
-import { ReactNode } from "react";
-import {
-  HTMLMotionProps,
-  motion,
-  useSpring,
-  useTransform,
-} from "framer-motion";
-import Balancer from "react-wrap-balancer";
-
-import { cn } from "@/lib/utils";
 import { LoginLink, useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import React from "react";
+import {
+  IconBook,
+  IconLibrary,
+  IconSearch,
+  IconUsers,
+  IconArrowRight,
+} from "@tabler/icons-react";
+import Link from "next/link";
 
-interface FeatureCardProps extends HTMLMotionProps<"div"> {
-  feature: {
-    title: ReactNode;
-    category: string;
-    imageUrl: string;
-  };
-  zIndexOffset?: number;
-}
+const Herosec = () => {
+  const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
 
-function FeatureCard({
-  feature,
-  className,
-  zIndexOffset = 0,
-  ...props
-}: FeatureCardProps) {
-  const { title, category, imageUrl } = feature;
-  const springValue = useSpring(0, {
-    bounce: 0,
-  });
-  const zIndex = useTransform(
-    springValue,
-    (value) => +Math.floor(value * 10) + 10 + zIndexOffset
-  );
-  const scale = useTransform(springValue, [0, 1], [1, 1.1]);
+  const features = [
+    {
+      icon: <IconBook className="w-6 h-6" />,
+      title: "Book Management",
+      description: "Efficiently manage your library's book collection",
+    },
+    {
+      icon: <IconSearch className="w-6 h-6" />,
+      title: "Quick Search",
+      description: "Find books and resources instantly",
+    },
+    {
+      icon: <IconUsers className="w-6 h-6" />,
+      title: "User Management",
+      description: "Manage library members and their access",
+    },
+    {
+      icon: <IconLibrary className="w-6 h-6" />,
+      title: "Inventory Control",
+      description: "Track items and maintain accurate records",
+    },
+  ];
 
-  const content = (
-    <>
-      <img
-        src={imageUrl}
-        alt=""
-        className="-z-1 absolute inset-0 h-full w-full object-cover"
-      />
-      <div className="z-10 flex h-full w-full flex-col gap-2 bg-gradient-to-t from-zinc-800/40 from-15% to-transparent p-3">
-        <small className="inline w-fit rounded-xl bg-orange-950 bg-opacity-50 px-2 py-1 text-xs font-medium leading-none text-white">
-          {category}
-        </small>
-
-        <div className="flex-1" />
-        <h3 className="rounded-xl bg-blue-950 bg-opacity-30 p-3 text-base font-bold leading-none text-white backdrop-blur-sm">
-          {title}
-        </h3>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="flex space-x-2">
+          <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce"></div>
+          <div
+            className="w-3 h-3 bg-blue-600 rounded-full animate-bounce"
+            style={{ animationDelay: "0.1s" }}
+          ></div>
+          <div
+            className="w-3 h-3 bg-blue-600 rounded-full animate-bounce"
+            style={{ animationDelay: "0.2s" }}
+          ></div>
+        </div>
       </div>
-    </>
-  );
-
-  const containerClassName = cn(
-    "relative flex h-64 w-48 flex-col overflow-hidden rounded-2xl shadow-none transition-shadow duration-300 ease-in-out hover:shadow-xl",
-    className
-  );
+    );
+  }
 
   return (
-    <>
-      <motion.div
-        onMouseEnter={() => springValue.set(1)}
-        onMouseLeave={() => springValue.set(0)}
-        style={{
-          zIndex,
-          scale,
-        }}
-        className={cn(containerClassName, "hidden sm:flex")}
-        {...props}
-      >
-        {content}
-      </motion.div>
-      <motion.div
-        initial={{ y: 100 }}
-        whileInView={{ y: 0, transition: { duration: 0.5 } }}
-        className={cn(containerClassName, "flex sm:hidden")}
-      >
-        {content}
-      </motion.div>
-    </>
-  );
-}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* Hero Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+        <div className="text-center">
+          {/* Welcome Message */}
+          <div className="mb-8">
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              Welcome to{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                LibEz
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              {isAuthenticated
+                ? `Welcome back, ${
+                    user?.given_name || "User"
+                  }! Ready to manage your library?`
+                : "The modern library management system that simplifies your workflow"}
+            </p>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+              Streamline your library operations with our comprehensive
+              management platform
+            </p>
+          </div>
 
-export default function ProductFeatures() {
-  const cardWidth = 48 * 4; // w-48 x 4
-  const angle = 6;
-  const yOffset = 30;
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            {isAuthenticated ? (
+              <>
+                <Link href="/dashboard">
+                  <button className="group bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2">
+                    <span>Go to Dashboard</span>
+                    <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                  </button>
+                </Link>
+                <Link href="/items">
+                  <button className="group bg-white hover:bg-gray-50 text-gray-700 font-semibold px-8 py-4 rounded-xl border-2 border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2">
+                    <span>Browse Items</span>
+                    <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                  </button>
+                </Link>
+              </>
+            ) : (
+              <LoginLink>
+                <button className="group bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2">
+                  <span>Get Started</span>
+                  <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                </button>
+              </LoginLink>
+            )}
+          </div>
 
-  const { isAuthenticated } = useKindeBrowserClient();
-  return (
-    <section className="storybook-fix flex w-full flex-col items-center gap-4 py-10">
-      <motion.header
-        initial={{
-          y: 100,
-          opacity: 0,
-        }}
-        animate={{
-          y: 0,
-          opacity: 1,
-          transition: {
-            duration: 0.5,
-          },
-        }}
-        className="flex max-w-md flex-col items-center gap-2 text-center"
-      >
-        <h1 className="text-3xl font-black text-orange-600">
-          Welcome to LibEz
-        </h1>
-        <Balancer className="block text-lg text-neutral-500">
-          Make your libary mangement Ezz <br /> with our support
-        </Balancer>
-      </motion.header>
-
-      <motion.div
-        initial={{
-          y: 100,
-          opacity: 0,
-        }}
-        animate={{
-          y: 0,
-          opacity: 1,
-          transition: {
-            duration: 0.5,
-          },
-        }}
-      >
-        {!isAuthenticated && (
-          <LoginLink>
-            {" "}
-            <button
-              className="box-border inline-block h-11 transform-gpu cursor-pointer touch-manipulation whitespace-nowrap rounded-full border-b-4 border-solid border-transparent bg-orange-600 px-4 py-3 text-center text-sm font-bold uppercase leading-5 tracking-wider text-white shadow-2xl outline-none transition-all duration-200 hover:brightness-110 active:border-b-0 active:border-t-4 active:bg-none disabled:cursor-auto"
-              role="button"
-            >
-              Get started &rarr;
-              <span className="absolute inset-0 -z-10 rounded-full border-b-4 border-solid border-transparent bg-orange-500" />
-            </button>
-          </LoginLink>
-        )}
-      </motion.div>
-
-      <div className="relative flex w-full flex-wrap justify-center gap-8 px-4 py-12 sm:flex-row sm:gap-0">
-        <FeatureCard
-          feature={{
-            category: "Admin",
-            imageUrl:
-              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2F64%2Fda%2F5f%2F64da5f723c10b8936054e55149584601.jpg&f=1&nofb=1&ipt=f8f3bf0492dcd8ef7e07af689df6f5d66e934e44eab19d24df9c1e3bdd077d01",
-            title: "admin can manage their users",
-          }}
-          initial={{
-            x: cardWidth,
-            y: yOffset,
-            opacity: 0,
-            rotate: 0,
-            scale: 0.9,
-          }}
-          animate={{
-            x: yOffset,
-            y: 10,
-            opacity: 1,
-            scale: 0.95,
-            rotate: -angle,
-            transition: {
-              type: "spring",
-              delay: 0.8,
-            },
-          }}
-        />
-
-        <FeatureCard
-          feature={{
-            category: "Users",
-            title: "Can track their lib work",
-            imageUrl:
-              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmoneyminiblog.com%2Fwp-content%2Fuploads%2F2023%2F05%2Fcollege-student-managing-money.jpg&f=1&nofb=1&ipt=b6990554bc3f061dd4e09a20fbf7c048d6e2feed088cf61725e69b427ecd5823",
-          }}
-          initial={{
-            y: yOffset,
-            opacity: 0,
-          }}
-          animate={{
-            y: 0,
-            opacity: 1,
-            transition: {
-              type: "spring",
-              delay: 0.4,
-            },
-          }}
-          zIndexOffset={1}
-        />
-
-        <FeatureCard
-          feature={{
-            category: "Books",
-            title: "features related to it",
-            imageUrl:
-              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpng.pngtree.com%2Fbackground%2F20230516%2Foriginal%2Fpngtree-large-library-with-wooden-shelves-and-books-picture-image_2599239.jpg&f=1&nofb=1&ipt=f3f9deeff997fba8e33e24de2b2da0280fdbefbb3e7f9f4f5a836e889cea0ca8",
-          }}
-          initial={{
-            x: -cardWidth,
-            y: yOffset,
-            opacity: 0,
-            rotate: 0,
-            scale: 0.9,
-          }}
-          animate={{
-            x: -yOffset,
-            y: 10,
-            opacity: 1,
-            rotate: angle,
-            scale: 0.95,
-            transition: {
-              type: "spring",
-              delay: 0.6,
-            },
-          }}
-        />
+          {/* Features Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group hover:border-blue-200"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-200">
+                  {feature.icon}
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-    </section>
+
+      {/* Stats Section */}
+      <div className="bg-white border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">
+                10,000+
+              </div>
+              <div className="text-gray-600">Books Managed</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">500+</div>
+              <div className="text-gray-600">Active Users</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">99.9%</div>
+              <div className="text-gray-600">Uptime</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-}
+};
+
+export default Herosec;

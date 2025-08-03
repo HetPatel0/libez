@@ -1,48 +1,67 @@
 "use client";
-import React from "react";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { IconArrowRight } from "@tabler/icons-react";
 
-import { cn } from "@/lib/utils";
-
-interface SwipeButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  firstText: string;
-  secondText: string;
+interface FlowBtnProps {
+  children: React.ReactNode;
   className?: string;
-  firstClass?: string;
-  secondClass?: string;
+  onClick?: () => void;
+  variant?: "primary" | "secondary" | "outline";
+  size?: "sm" | "md" | "lg";
+  disabled?: boolean;
 }
 
 export default function FlowBtn({
+  children,
   className = "",
-  secondText = "Get access",
-  firstText = "Get access",
-  firstClass = "bg-orange-500 text-white",
-  secondClass = "bg-black text-white",
-  ...props
-}: SwipeButtonProps) {
-  const common =
-    "block px-4 py-2   text-2xl font-bold duration-300 ease-in-out";
+  onClick,
+  variant = "primary",
+  size = "md",
+  disabled = false,
+}: FlowBtnProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const baseClasses =
+    "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+
+  const variantClasses = {
+    primary:
+      "bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg focus:ring-blue-500",
+    secondary:
+      "bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 focus:ring-gray-500",
+    outline:
+      "bg-transparent hover:bg-gray-50 text-gray-700 border border-gray-300 hover:border-gray-400 focus:ring-gray-500",
+  };
+
+  const sizeClasses = {
+    sm: "px-4 py-2 text-sm",
+    md: "px-6 py-3 text-base",
+    lg: "px-8 py-4 text-lg",
+  };
+
+  const buttonClasses = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+
   return (
-    <button 
-    
-      {...props}
-      className={cn(
-        "group relative min-w-10 overflow-hidden rounded-md",
-        className
-      )}
+    <motion.button
+      className={buttonClasses}
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.2 }}
     >
-      <span
-        className={cn(
-          "absolute inset-0 translate-y-full group-hover:translate-y-0",
-          common,
-          secondClass
-        )}
-      >
-        {secondText}
+      <span className="flex items-center space-x-2">
+        <span>{children}</span>
+        <motion.div
+          animate={{ x: isHovered ? 4 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <IconArrowRight className="w-4 h-4" />
+        </motion.div>
       </span>
-      <span className={cn("group-hover:-translate-y-full", common, firstClass)}>
-        {firstText}
-      </span>
-    </button>
+    </motion.button>
   );
 }
