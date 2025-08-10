@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import Dash from "@/components/dash";
 // import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { getServerSession } from "next-auth";
