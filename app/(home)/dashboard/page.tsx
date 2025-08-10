@@ -9,7 +9,7 @@ async function Dashboard() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("api/auth/signin");
+    redirect("auth/signin/");
   }
   return (
     // here dashboard changes
