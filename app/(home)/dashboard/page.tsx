@@ -1,13 +1,15 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Dash from "@/components/dash";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+// import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
 
 async function Dashboard() {
-  const { isAuthenticated } = getKindeServerSession();
-  const isLoggedIn = await isAuthenticated();
-  if (!isLoggedIn) {
-    redirect("api/auth/login");
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("api/auth/signin");
   }
   return (
     // here dashboard changes

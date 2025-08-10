@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/generated/prisma";
+import { PrismaClient } from "@/app/generated/prisma";
 import React from "react";
 import {
   IconSearch,
@@ -8,149 +8,187 @@ import {
   IconEye,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 async function page() {
-  // const prisma = new PrismaClient();
-  // const data = await prisma.item.findMany();
-  const data = await prisma.item.findMany();
+  const prisma = new PrismaClient();
+  const data = await prisma.item?.findMany();
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-muted/50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold tracking-tight">
                 Library Items
               </h1>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Browse and rent items from your library collection
               </p>
             </div>
-            <button className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center space-x-2">
-              <IconPlus className="w-5 h-5" />
-              <span>Add New Item</span>
-            </button>
+            <Button className="mt-4 sm:mt-0 shadow-md hover:shadow-lg transition-all duration-200">
+              <IconPlus className="w-4 h-4 mr-2" />
+              Add New Item
+            </Button>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search items..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                />
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    type="text"
+                    placeholder="Search items..."
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                >
+                  <IconFilter className="w-4 h-4" />
+                  <span>Filter</span>
+                </Button>
+                <Select>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="All Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="books">Books</SelectItem>
+                    <SelectItem value="magazines">Magazines</SelectItem>
+                    <SelectItem value="journals">Journals</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            <div className="flex gap-3">
-              <button className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200">
-                <IconFilter className="w-5 h-5" />
-                <span>Filter</span>
-              </button>
-              <select className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                <option>All Types</option>
-                <option>Books</option>
-                <option>Magazines</option>
-                <option>Journals</option>
-                <option>Other</option>
-              </select>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Items Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Item Name
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Author
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="font-medium">ID</TableHead>
+                  <TableHead className="font-medium">Item Name</TableHead>
+                  <TableHead className="font-medium">Author</TableHead>
+                  <TableHead className="font-medium">Price</TableHead>
+                  <TableHead className="font-medium">Type</TableHead>
+                  <TableHead className="font-medium">Status</TableHead>
+                  <TableHead className="font-medium">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {data.map((item, idx: number) => (
-                  <tr
+                  <TableRow
                     key={idx}
-                    className="hover:bg-gray-50 transition-colors duration-200"
+                    className="hover:bg-muted/50 transition-colors duration-200"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <TableCell className="font-medium">
                       #{item?.ItemID}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                          <IconBook className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-8 w-8 bg-blue-100">
+                          <AvatarFallback className="bg-blue-100 text-blue-600">
+                            <IconBook className="w-4 h-4" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="space-y-1">
+                          <div className="font-medium leading-none">
                             {item?.ItemTitle}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-muted-foreground">
                             ISBN: {item?.ItemID || "N/A"}
                           </div>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    </TableCell>
+                    <TableCell className="text-foreground">
                       {item?.ItemAuthor}
-                      
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    </TableCell>
+                    <TableCell className="text-foreground">
                       Rs {item?.ItemPrice?.toString() || "0"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className="bg-blue-100 text-blue-800 hover:bg-blue-200"
+                      >
                         {item?.ItemType}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-100 text-green-800 hover:bg-green-200"
+                      >
                         Available
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900 transition-colors border-black border-1 bg-sky-200 rounded-md p-2 duration-200">
-                          <Link href={`/items/${item?.ItemID}`}>
-                            <IconEye className="w-4 h-4" />
-                          </Link>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0 border-primary/20 bg-blue-50 hover:bg-blue-100"
+                        asChild
+                      >
+                        <Link href={`/items/${item?.ItemID}`}>
+                          <IconEye className="w-4 h-4 text-blue-600" />
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>  
-          </div>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
-          {/* Pagination */}
+        {/* Pagination Section - Placeholder for future implementation */}
+        <div className="mt-6 flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">
+            Showing {data.length} items
+          </div>
+          <div className="flex items-center space-x-2">
+            {/* Pagination controls can be added here */}
+          </div>
         </div>
       </div>
     </div>

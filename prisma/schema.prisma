@@ -1,7 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-    binaryTargets = ["native", "rhel-openssl-3.0.x", "windows"]
-  output   = "../generated/prisma"
+  output   = "../app/generated/prisma"
 }
 
 datasource db {
@@ -15,7 +14,7 @@ model item {
   ItemAuthor      String?           @db.VarChar(255)
   ItemType        String?           @db.VarChar(100)
   ItemPrice       Decimal?          @db.Decimal(10, 2)
-  ItemImage       String?           @db.VarChar(255)  
+  ItemImage       String?           @db.VarChar(255)
   itemtransaction itemtransaction[]
 }
 
@@ -58,24 +57,22 @@ model patron {
   @@index([UserID], map: "FK_Patron_Users")
 }
 
-model user_type {
-  UserTypeID   Int      @id @default(autoincrement())
-  UserTypeName String   @unique(map: "UserTypeName") @db.VarChar(100)
-  IsLibrarian  Boolean? @default(false)
-  IsAdmin      Boolean? @default(false)
-  IsStudent    Boolean? @default(false)
-  users        users[]
+enum UserRole {
+  ADMIN
+  LIBRARIAN
+  STUDENT
+  PATRON
+  // Add other roles as needed
 }
 
 model users {
-  UserID     Int         @id @default(autoincrement())
-  UserName   String      @unique(map: "UserName") @db.VarChar(100)
-  UserPass   String      @db.VarChar(255)
-  UserEmail  String?     @unique(map: "UserEmail") @db.VarChar(255)
-  UserTypeID Int
-  librarian  librarian[]
-  patron     patron[]
-  user_type  user_type   @relation(fields: [UserTypeID], references: [UserTypeID])
+  UserID      Int      @id @default(autoincrement())
+  UserName    String   @unique(map: "UserName") @db.VarChar(100)
+  UserPass    String   @db.VarChar(255)
+  UserEmail   String?  @unique(map: "UserEmail") @db.VarChar(255)
+  // Use the UserRole enum for the user's role
+  UserRole    UserRole @default(STUDENT) // Set a default role if desired
 
-  @@index([UserTypeID])
+  librarian   librarian[]
+  patron      patron[]
 }
