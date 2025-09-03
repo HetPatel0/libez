@@ -8,8 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 enum Status {
   PENDING
   APPROVED
@@ -27,29 +25,29 @@ enum BorrowStatus {
 }
 
 model User {
-  id                String   @id @default(uuid())
-  fullName          String   @db.VarChar(255)
-  email             String   @unique
+  id                Int            @id @default(autoincrement())
+  fullName          String         @db.VarChar(255)
+  email             String         @unique
   password          String
-  status            Status   @default(PENDING)
-  role              Role     @default(USER)
-  lastActivityDate  DateTime @default(now()) @db.Date
-  createdAt         DateTime @default(now()) @db.Timestamptz(6)
+  status            Status         @default(PENDING)
+  role              Role           @default(USER)
+  lastActivityDate  DateTime       @default(now()) @db.Date
+  createdAt         DateTime       @default(now()) @db.Timestamptz(6)
 
   // Relations
   borrowRecords     BorrowRecord[]
 }
 
 model Book {
-  id              String   @id @default(uuid())
-  title           String   @db.VarChar(255)
-  author          String   @db.VarChar(255)
+  id              Int            @id @default(autoincrement())
+  title           String         @db.VarChar(255)
+  author          String         @db.VarChar(255)
   genre           String
   rating          Int
   coverUrl        String
   description     String
-  totalCopies     Int      @default(1)
-  createdAt       DateTime @default(now()) @db.Timestamptz(6)
+  totalCopies     Int            @default(1)
+  createdAt       DateTime       @default(now()) @db.Timestamptz(6)
 
   // Relations
   borrowRecords   BorrowRecord[]
@@ -57,8 +55,8 @@ model Book {
 
 model BorrowRecord {
   id         String       @id @default(uuid())
-  userId     String
-  bookId     String
+  userId     Int
+  bookId     Int
   borrowDate DateTime     @default(now()) @db.Timestamptz(6)
   dueDate    DateTime     @db.Date
   returnDate DateTime?    @db.Date

@@ -1,12 +1,13 @@
 'use server'
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import React from 'react'
 
 async function items_delete({id}:{id:string}) {
 
 
-  await prisma.book.delete({where:{id:id}})
+  await prisma.book.delete({where:{id:parseInt(id)}})
     revalidatePath('/items')
 } 
 export async function items_add(formdata:FormData) {
@@ -20,9 +21,10 @@ export async function items_add(formdata:FormData) {
       coverUrl: formdata.get("imageUrl") as string,
     }
    })
-    revalidatePath('/items')
+   revalidatePath('/items')
+   redirect('/items')
   
-  // console.log("formdata",formdata.get("title"))
+  // console.log("formdata",formdata.get("  title"))
   // console.log("formdata",formdata.get("author"))
   // console.log("formdata",formdata.get("category"))     
   //  await prisma.book.create({
