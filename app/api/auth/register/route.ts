@@ -4,11 +4,11 @@ import prisma  from "@/lib/prisma"
 import { hashPassword } from "@/lib/password"
 
 // Define UserRole locally
-type UserRole = "STUDENT" | "LIBRARIAN" | "ADMIN"
+type UserRole = "USER" | "ADMIN"
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, username, role = "STUDENT" as UserRole } = await request.json()
+    const { email, password, username, role  } = await request.json()
 
     // Validate input
     if (!email || !password || !username) {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate role
-    const validRoles: UserRole[] = ["STUDENT", "LIBRARIAN", "ADMIN"]
+    const validRoles: UserRole[] = ["USER",  "ADMIN"]
     if (!validRoles.includes(role)) {
       return NextResponse.json(
         { error: "Invalid role specified" },
@@ -35,11 +35,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await prisma.users.findFirst({
+    const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
-          { UserEmail: email },
-          { UserName: username }
+          { email: email },
+          { fullName: username }
         ]
       }
     })
@@ -55,18 +55,19 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await hashPassword(password)
 
     // Create user
-    const user = await prisma.users.create({
+    const user = await prisma.user.create({
       data: {
-        UserEmail: email,
-        UserPass: hashedPassword,
-        UserName: username,
-        UserRole: role,
+        email: email,
+        password: hashedPassword,
+        fullName: username,
+        role: role,
+
       },
       select: {
-        UserID: true,
-        UserEmail: true,
-        UserName: true,
-        UserRole: true,
+        id: true,
+        email: true,
+        fullName: true,
+        role: true,
       }
     })
 
@@ -74,10 +75,10 @@ export async function POST(request: NextRequest) {
       { 
         message: "User created successfully",
         user: {
-          id: user.UserID,
-          email: user.UserEmail,
-          username: user.UserName,
-          role: user.UserRole
+          id: user.id,
+          email: user.email,
+          username: user.fullName,
+          role: user.role
         }
       },
       { status: 201 }

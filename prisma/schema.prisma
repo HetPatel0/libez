@@ -8,71 +8,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model item {
-  ItemID          Int               @id @default(autoincrement())
-  ItemTitle       String            @db.VarChar(255)
-  ItemAuthor      String?           @db.VarChar(255)
-  ItemType        String?           @db.VarChar(100)
-  ItemPrice       Decimal?          @db.Decimal(10, 2)
-  ItemImage       String?           @db.VarChar(255)
-  itemtransaction itemtransaction[]
+
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
-model itemtransaction {
-  ItemTranID     Int      @id @default(autoincrement())
-  ItemID         Int
-  IsAvailable    Boolean? @default(true)
-  ItemAssignedTo Int?
-  IsVisible      Boolean? @default(true)
-  patron         patron?  @relation(fields: [ItemAssignedTo], references: [PatronID])
-  item           item     @relation(fields: [ItemID], references: [ItemID], onDelete: Cascade)
-
-  @@index([ItemID], map: "FK_ItemTransaction_Item")
-  @@index([ItemAssignedTo], map: "FK_ItemTransaction_Patron")
-}
-
-model librarian {
-  LibrarianID   Int    @id @default(autoincrement())
-  LibrarianName String @db.VarChar(255)
-  UserID        Int?
-  users         users? @relation(fields: [UserID], references: [UserID])
-
-  @@index([UserID], map: "FK_Librarian_Users")
-}
-
-model patron {
-  PatronID               Int               @id @default(autoincrement())
-  PatronFirstName        String            @db.VarChar(100)
-  PatronMiddleName       String?           @db.VarChar(100)
-  PatronLastName         String            @db.VarChar(100)
-  PatronDepartment       String?           @db.VarChar(100)
-  PatronSemester         String?           @db.VarChar(50)
-  PatronRollNo           String?           @unique(map: "PatronRollNo") @db.VarChar(50)
-  PatronEnrollmentNumber String?           @unique(map: "PatronEnrollmentNumber") @db.VarChar(100)
-  PatronImage            String?           @db.VarChar(255)
-  UserID                 Int?
-  itemtransaction        itemtransaction[]
-  users                  users?            @relation(fields: [UserID], references: [UserID])
-
-  @@index([UserID], map: "FK_Patron_Users")
-}
-
-enum UserRole {
+enum Role {
+  USER
   ADMIN
-  LIBRARIAN
-  STUDENT
-  PATRON
-  // Add other roles as needed
 }
 
-model users {
-  UserID      Int      @id @default(autoincrement())
-  UserName    String   @unique(map: "UserName") @db.VarChar(100)
-  UserPass    String   @db.VarChar(255)
-  UserEmail   String?  @unique(map: "UserEmail") @db.VarChar(255)
-  // Use the UserRole enum for the user's role
-  UserRole    UserRole @default(STUDENT) // Set a default role if desired
+enum BorrowStatus {
+  BORROWED
+  RETURNED
+}
 
-  librarian   librarian[]
-  patron      patron[]
+model User {
+  id                String   @id @default(uuid())
+  fullName          String   @db.VarChar(255)
+  email             String   @unique
+  password          String
+  status            Status   @default(PENDING)
+  role              Role     @default(USER)
+  lastActivityDate  DateTime @default(now()) @db.Date
+  createdAt         DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  borrowRecords     BorrowRecord[]
+}
+
+model Book {
+  id              String   @id @default(uuid())
+  title           String   @db.VarChar(255)
+  author          String   @db.VarChar(255)
+  genre           String
+  rating          Int
+  coverUrl        String
+  description     String
+  totalCopies     Int      @default(1)
+  createdAt       DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  borrowRecords   BorrowRecord[]
+}
+
+model BorrowRecord {
+  id         String       @id @default(uuid())
+  userId     String
+  bookId     String
+  borrowDate DateTime     @default(now()) @db.Timestamptz(6)
+  dueDate    DateTime     @db.Date
+  returnDate DateTime?    @db.Date
+  status     BorrowStatus @default(BORROWED)
+  createdAt  DateTime     @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
 }

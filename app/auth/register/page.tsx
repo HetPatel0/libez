@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 // Define UserRole locally
-type UserRole = "STUDENT" | "LIBRARIAN" | "ADMIN";
+type UserRole = "USER" |  "ADMIN";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -13,7 +13,7 @@ export default function Register() {
     password: "",
     confirmPassword: "",
     username: "",
-    role: "STUDENT" as UserRole,
+    role: "USER" as UserRole,
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -243,8 +243,7 @@ export default function Register() {
                     value={formData.role}
                     onChange={handleChange}
                   >
-                    <option value="STUDENT">Student</option>
-                    <option value="LIBRARIAN">Librarian</option>
+                    <option value="USER">Student</option>
                     <option value="ADMIN">Administrator</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">

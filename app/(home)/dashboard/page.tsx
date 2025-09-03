@@ -10,7 +10,7 @@ async function Dashboard() {
 
   if (!session) {
     redirect("auth/signin/");
-  }
+}
   return (
     // here dashboard changes
     <div>
