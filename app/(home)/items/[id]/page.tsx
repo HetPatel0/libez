@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 
-export default async function ItemPage({ params }: { params: { id: string } }) {
-  const {id} =  params;
+export default async function ItemPage({ params} :{params:Promise<{id:string}>}) {
+  const {id} = await params;
 
   // Fetch item by ID
   const book = await prisma.book.findUnique({
