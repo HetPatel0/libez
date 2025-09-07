@@ -6,7 +6,7 @@ export default async function ItemPage({ params }: { params: { id: string } }) {
 
   // Fetch item by ID
   const book = await prisma.book.findUnique({
-    where: { id: parseInt(id,10) },
+    where: { id: parseInt(id) },
   });
 
   if (!book) {
